@@ -28,19 +28,18 @@ import os
 import pandas as pd
 import mlflow
 
-# === MODEL LOADING CONFIGURATION ===
-# IMPORTANT: This path is set during Docker container build
-# In development: uses local MLflow artifacts
-# In production: uses model copied to container at build time
-MODEL_DIR = "/app/model"
+
+#MODEL_DIR = "/app/model"
+#MODEL_DIR = os.getenv("MODEL_DIR", "./mlruns")
+MODEL_DIR = r"D:\ML\Telco Customer Churn ML\test\mlruns\446631438249863334\4a72e46ad2f74412b969e8574a3099e3\artifacts\model"
 
 try:
     # Load the trained XGBoost model in MLflow pyfunc format
     # This ensures compatibility regardless of the underlying ML library
     model = mlflow.pyfunc.load_model(MODEL_DIR)
-    print(f"✅ Model loaded successfully from {MODEL_DIR} - inference.py:41")
+    print(f"✅ Model loaded successfully from {MODEL_DIR} - inference.py:40")
 except Exception as e:
-    print(f"❌ Failed to load model from {MODEL_DIR}: {e} - inference.py:43")
+    print(f"❌ Failed to load model from {MODEL_DIR}: {e} - inference.py:42")
     # Fallback for local development (OPTIONAL)
     try:
         # Try loading from local MLflow tracking
@@ -50,7 +49,7 @@ except Exception as e:
             latest_model = max(local_model_paths, key=os.path.getmtime)
             model = mlflow.pyfunc.load_model(latest_model)
             MODEL_DIR = latest_model
-            print(f"✅ Fallback: Loaded model from {latest_model} - inference.py:53")
+            print(f"✅ Fallback: Loaded model from {latest_model} - inference.py:52")
         else:
             raise Exception("No model found in local mlruns")
     except Exception as fallback_error:
@@ -60,10 +59,16 @@ except Exception as e:
 # CRITICAL: Load the exact feature column order used during training
 # This ensures the model receives features in the expected order
 try:
-    feature_file = os.path.join(MODEL_DIR, "feature_columns.txt")
+    #feature_file = os.path.join(MODEL_DIR, "feature_columns.txt")
+    ARTIFACT_DIR = os.path.dirname(MODEL_DIR)
+    feature_file = os.path.join(
+        ARTIFACT_DIR,
+        "feature_columns.txt"   
+    )
+    
     with open(feature_file) as f:
         FEATURE_COLS = [ln.strip() for ln in f if ln.strip()]
-    print(f"✅ Loaded {len(FEATURE_COLS)} feature columns from training - inference.py:66")
+    print(f"✅ Loaded {len(FEATURE_COLS)} feature columns from training - inference.py:71")
 except Exception as e:
     raise Exception(f"Failed to load feature columns: {e}")
 
