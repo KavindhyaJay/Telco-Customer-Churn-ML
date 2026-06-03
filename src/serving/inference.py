@@ -29,9 +29,9 @@ import pandas as pd
 import mlflow
 
 
-#MODEL_DIR = "/app/model"
-#MODEL_DIR = os.getenv("MODEL_DIR", "./mlruns")
-MODEL_DIR = r"D:\ML\Telco Customer Churn ML\test\mlruns\446631438249863334\4a72e46ad2f74412b969e8574a3099e3\artifacts\model"
+MODEL_DIR = "/app/model/model"
+
+#MODEL_DIR = r"D:\ML\Telco Customer Churn ML\test\mlruns\446631438249863334\4a72e46ad2f74412b969e8574a3099e3\artifacts\model"
 
 try:
     # Load the trained XGBoost model in MLflow pyfunc format
